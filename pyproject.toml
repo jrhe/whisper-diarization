@@ -1,7 +1,7 @@
 [project]
 name = "whisper-diarization"
 version = "0.1.0"
-description = "Speaker Diarization pipeline based on OpenAI Whisper"
+description = "Add your description here"
 readme = "README.md"
 requires-python = ">=3.10"
 dependencies = [
@@ -12,9 +12,52 @@ dependencies = [
     "nemo_toolkit[asr]==2.0.0rc0",
     "nltk",
     "faster-whisper>=1.1.0",
+    "torch",
+    "torchaudio",
+]
+
+[project.optional-dependencies]
+cpu = [
+  "torch>=2.5.1",
+  "torchaudio>=2.5.1",
+]
+cu124 = [
+  "torch>=2.5.1",
+  "torchaudio>=2.5.1",
+]
+
+cu121 = [
+  "torch>=2.5.1",
+  "torchaudio>=2.5.1",
+]
+
+cu118 = [
+  "torch>=2.5.1",
+  "torchaudio>=2.5.1",
+]
+
+rocm62 = [
+  "torch",
+  "torchaudio",
 ]
 
 [tool.uv.sources]
+# PyTorch doesn't publish CPU-only builds for macOS, since macOS builds are always considered CPU-only. As such, we gate on platform_system to instruct uv to ignore the PyTorch index when resolving for macOS.
+torch = [
+  { index = "pytorch-cpu", extra = "cpu", marker = "platform_system != 'Darwin'" },
+  { index = "pytorch-cu124", extra = "cu124", marker = "platform_system == 'Linux' or platform_system == 'Windows'" },
+  { index = "pytorch-cu121", extra = "cu121", marker = "platform_system == 'Linux' or platform_system == 'Windows'" },
+  { index = "pytorch-cu118", extra = "cu118", marker = "platform_system == 'Linux' or platform_system == 'Windows'" },
+  { index = "pytorch-rocm6.2", extra = "rocm62", marker = "platform_system == 'Linux'" },
+]
+torchaudio = [
+  { index = "pytorch-cpu", extra = "cpu", marker = "platform_system != 'Darwin'" },
+  { index = "pytorch-cu124", extra = "cu124", marker = "platform_system == 'Linux' or platform_system == 'Windows'" },
+  { index = "pytorch-cu121", extra = "cu121", marker = "platform_system == 'Linux' or platform_system == 'Windows'" },
+  { index = "pytorch-cu118", extra = "cu118", marker = "platform_system == 'Linux' or platform_system == 'Windows'" },
+  { index = "pytorch-rocm6.2", extra = "rocm62", marker = "platform_system == 'Linux'" },
+]
+
 ctc-forced-aligner = { git = "https://github.com/MahmoudAshraf97/ctc-forced-aligner.git" }
 deepmultilingualpunctuation = { git = "https://github.com/oliverguhr/deepmultilingualpunctuation.git" }
 demucs = { git = "https://github.com/MahmoudAshraf97/demucs.git" }
@@ -24,3 +67,37 @@ constraint-dependencies = [
     "huggingface_hub<0.24",
     "numpy<2",
 ]
+conflicts = [
+  [
+    { extra = "cpu" },
+    { extra = "cu124" },
+    { extra = "cu121" },
+    { extra = "cu118" },
+    { extra = "rocm62" },
+  ],
+]
+
+[[tool.uv.index]]
+name = "pytorch-cpu"
+url = "https://download.pytorch.org/whl/cpu"
+explicit = true
+
+[[tool.uv.index]]
+name = "pytorch-cu124"
+url = "https://download.pytorch.org/whl/cu124"
+explicit = true
+
+[[tool.uv.index]]
+name = "pytorch-cu121"
+url = "https://download.pytorch.org/whl/cu121"
+explicit = true
+
+[[tool.uv.index]]
+name = "pytorch-cu118"
+url = "https://download.pytorch.org/whl/cu118"
+explicit = true
+
+[[tool.uv.index]]
+name = "pytorch-rocm6.2"
+url = "https://download.pytorch.org/whl/rocm6.2"
+explicit = true
